@@ -3,8 +3,8 @@
 Ready to run Jenkins CI server and artifactory.
 Jenkins includes master and nodes. 
 
-docker-compose.yml        #general config to start all together<b>
-Jenkins_dockerfile        #configuration file to build docker container of Jenkins master
+docker-compose.yml        #general config to start all together<br>
+Jenkins_dockerfile        #configuration file to build docker container of Jenkins master<br>
 Dockerfile_opensdl_new    #configuration file to build docker container of Jenkins node
 
 ##Getting started
