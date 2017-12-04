@@ -2,7 +2,7 @@
 
 Docker based way to run Jenkins build server and artifactory.
 
-##Prerequisites.
+###Prerequisites.
 
 1. Installed [Docker|http://docker.io]
 ```
@@ -22,7 +22,7 @@ sudo wget \
 ```
 
 
-##Getting started
+<H2>Getting started</H2>
 
 ./start_jenkins.sh
 
