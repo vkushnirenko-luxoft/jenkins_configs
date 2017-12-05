@@ -1,0 +1,44 @@
+jenkins_agent:
+    build: .
+    dockerfile: Dockerfile_opensdl_new
+    cap_add:
+     - NET_ADMIN
+    restart: always
+    container_name: agent
+    labels:
+      container_group: jenkins
+
+jenkins:
+    build: .
+    dockerfile: Jenkins_dockerfile
+    environment:
+     - JENKINS_JAVA_OPTIONS=-Dmail.smtp.starttls.enable=true
+     - JENKINS_OPTS=-Dmail.smtp.starttls.enable=true
+     - JAVA_ARGS=-Dmail.smtp.starttls.enable=true
+     - JENKINS_OPTS=mail.smtp.starttls.enable=true
+     - JAVA_OPTS=-Dmail.smtp.starttls.enable=true -Djava.awt.headless=true
+    ports:
+     - "8080:8080"
+     - "50000:50000"
+     - "23:22"
+    volumes:
+     - "/home/jenkins/docker/jenkins_files:/var/jenkins_home"
+     - "/home/jenkins/jenkins_temp:/var/tmp"
+    restart: always
+    links:
+     - "jenkins_agent"
+    labels:
+      container_group: jenkins
+
+artifactory:
+    image: docker.bintray.io/jfrog/artifactory-oss:latest
+    container_name: artifactory
+    ports:
+     - "8081:8081"
+    volumes:
+     - "/home/jenkins/docker/art/artifactory_data:/var/opt/jfrog/artifactory/data"
+     - "/home/jenkins/docker/art/artifactory_logs:/var/opt/jfrog/artifactory/logs"
+     - "/home/jenkins/docker/art/artifactory_etc:/var/opt/jfrog/artifactory/etc"
+    restart: always
+    labels:
+      container_group: jenkins
