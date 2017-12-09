@@ -1,74 +1,44 @@
-FROM ubuntu:trusty
+FROM evarga/jenkins-slave:latest
 
-RUN sudo apt-get -y update && sudo apt-get -y upgrade && \
-    sudo apt-get install -y software-properties-common python-software-properties
+RUN  apt-get -y update && apt-get -y upgrade && \
+     apt-get install -y software-properties-common python-software-properties
 
-RUN sudo add-apt-repository --yes  ppa:beineri/opt-qt532-trusty &&\
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test && \
-    sudo add-apt-repository --yes ppa:openjdk-r/ppa && \
-    sudo apt-get -qq update && \
-    sudo apt-get install -y qt53base qt53websockets && \
-    apt-get install -y default-jre \
-                maven \
-                git \
-                firefox \
+RUN  add-apt-repository --yes  ppa:beineri/opt-qt532-trusty &&\
+     add-apt-repository ppa:ubuntu-toolchain-r/test && \
+     add-apt-repository --yes ppa:openjdk-r/ppa && \
+     apt-get -qq update && \
+     apt-get install -y qt53base qt53websockets \
+                firefox chromium-browser\
                 xvfb \
-                openssh-server \
                 wkhtmltopdf \
                 xsltproc \
                 clang-format-3.6 \
-                liblua5.2 \
-                libxml2 \
-                lua-lpeg \
-                liblua5.2-dev \
-                libxml2-dev \
-                lua-lpeg-dev \
+                libxml2 libxml2-dev \
+                lua-lpeg liblua5.2 liblua5.2-dev lua-lpeg-dev \
                 cppcheck \
-                libssl-dev \
-                libudev-dev \
-                libavahi-client-dev \
+                libssl-dev libudev-dev libavahi-client-dev \
                 sqlite3 \
                 libsqlite3-dev \
                 automake1.11 \
                 libexpat1-dev \
-                ccache \
-                libxml2 \
-                libxml2-dev \
-                git \
                 libpulse-dev \
-                subversion \
                 doxygen \
                 graphviz \
                 mscgen \
-                libbluetooth3 \
-                libbluetooth-dev \
-                bluez-tools \
-                chromium-browser \
+                libbluetooth3 libbluetooth-dev bluez-tools \
                 libgl1-mesa-dev \
                 libgtest-dev \
                 binutils \
-                cmake \
-                cmake-curses-gui \
+                cmake ccache cmake-curses-gui \
                 gitk \
-                gcc \
-                g++ \
+                g++-4.9 gcc-4.9 \
                 dos2unix \
                 gdebi \
-                python-pip \
-                curl \
-                xvfb
-
-RUN dpkg-query -W -f='${binary:Package}\n' | grep -E -e '^(ia32-)?(sun|oracle)-java' -e '^openjdk-' -e '^icedtea' -e '^(default|gcj)-j(re|dk)' -e '^gcj-(.*)-j(re|dk)' -e '^java-common' | xargs sudo apt-get -y remove
-RUN apt-get install -y openjdk-8-jre
-
+                python-pip python-dev\
+                curl
 RUN wget http://archive.ubuntu.com/ubuntu/pool/main/l/lcov/lcov_1.11-3_all.deb && \
-    sudo dpkg -i lcov_1.11-3_all.deb
-RUN apt-get -y install g++-4.9 gcc-4.9 && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 20 && \ 
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 20 && \
-    update-alternatives --config gcc && \
-    update-alternatives --config g++ && \
-    sudo ln -sf /usr/bin/gcov-4.9 /usr/bin/gcov && \
+    dpkg -i lcov_1.11-3_all.deb
+RUN ln -sf /usr/bin/gcov-4.9 /usr/bin/gcov && \
     pip install pylint
 
 RUN locale-gen en_US.UTF-8
@@ -76,17 +46,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN sed -i 's|session required pam_loginuid.so|session optional pam_loginuid.so|g' /etc/pam.d/sshd
-RUN mkdir -p /var/run/sshd
-RUN adduser --quiet jenkins && echo "jenkins:jenkins" | chpasswd && \
-    sudo echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
 RUN echo -e '#!/bin/bash\nxvfb-run -a --server-args="-screen 0, 1024x768x24" /usr/bin/wkhtmltopdf -q $*' > /usr/bin/wkhtmltopdf.sh
 RUN chmod a+x /usr/bin/wkhtmltopdf.sh && \
     chmod u+s /sbin/ifconfig && \
     ln -s /usr/bin/wkhtmltopdf.sh /usr/local/bin/wkhtmltopdf
-
-ENV TZ=Europe/Kiev
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
