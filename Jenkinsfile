@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                sh 'java --version'
+                sh 'echo "eee"'
             }
         }
     }
