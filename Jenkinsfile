@@ -1,5 +1,9 @@
 pipeline {
-    agent { docker image 'slave:v.1' }
+    agent {
+        docker {
+            image 'slave:v.1'
+        }
+    }
     stages {
         stage('build') {
             steps {
@@ -7,4 +11,4 @@ pipeline {
             }
         }
     }
-}
+}blob/draft/Jenkinsfile
