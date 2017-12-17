@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'slave:v.1'
+            image 'evarga/jenkins-slave:latest'
         }
     }
     stages {
