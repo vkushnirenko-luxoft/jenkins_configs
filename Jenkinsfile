@@ -11,4 +11,4 @@ pipeline {
             }
         }
     }
-}blob/draft/Jenkinsfile
+}
